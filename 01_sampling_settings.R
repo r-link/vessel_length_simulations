@@ -53,11 +53,12 @@ dists <- c("exp", "erlang2", "weibull", "gamma", "lnorm")
 
 
 # expand sampling grid with these settings and reorder table
-settings <- expand.grid(distribution = dists, run = runs, ncuts = ncuts, nvess = nvess)%>% 
-  mutate(code = factor(paste0(substr(distribution, 1, 3), "_cut", # ID for each simulation
+settings <- expand.grid(distribution = dists, run = runs, ncuts = ncuts, nvess = nvess,
+                        stringsAsFactors = FALSE)%>% 
+  mutate(code = paste0(substr(distribution, 1, 3), "_cut", # ID for each simulation
                               formatC(ncuts, width = 3, flag = 0), "_cond", 
                               formatC(nvess, width = 3, flag = 0), "_rep", 
-                              formatC(run, width = 3, flag = 0)))) %>% 
+                              formatC(run, width = 3, flag = 0))) %>% 
   select(distribution, run, ncuts:code) %>%                        # reorder columns
   arrange(distribution, ncuts, nvess, run) %>%                    # reorder rows
   as.tibble()                                                     # convert to tibble
@@ -66,6 +67,7 @@ settings <- expand.grid(distribution = dists, run = runs, ncuts = ncuts, nvess =
 settings
 
 # define table with parameter settings for the different distributions
+# (parameter names are stored in separate columns to make sampling easier)
 parsets <- rbind(
   tibble(distribution = "exp", 
          truemean  = seq(1, 30, length.out = 100),
@@ -107,7 +109,7 @@ parsets1 <- mutate(parsets, run = rep(1:100, 5)) %>%
 parsets1
 
 # join tables to obtain joined dataframe with all settings for the simulated distributions
-settings1 <- left_join(settings, parsets)  %>% 
+settings1 <- left_join(settings, parsets1)  %>% 
   arrange(distribution, ncuts, nvess, run)    %>%
   select(code, distribution, ncuts, nvess, run, truemean:par2_name)
 # inspect
