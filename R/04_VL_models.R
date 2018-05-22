@@ -9,7 +9,10 @@
 ################################################################################
 
 # Contents ---------------------------------------------------------------------
-# 1. mle_VL() - maximum likelihood estimation of vessel length distributions
+# 1. mle_VL()  - maximum likelihood estimation of vessel length distributions
+# 2. fit_mod() - function operator that either passes its arguments to mle_VL,
+#                or fits simple (non)linear models based on the Cohen or 
+#                Christman methods
 
 # 1. mle_VL() ------------------------------------------------------------------
 # function for the maximum likelihood estimation of the parameters of vessel 
@@ -62,30 +65,51 @@ mle_VL <-   function(z, counts, dist, subs = FALSE, size = NULL, start, lower){
   return(mod)
 }
 
+# 2. fit_mod() -----------------------------------------------------------------
+# function operator that either passes its arguments to mle_VL, 
+# or fits simple (non)linear models based on the Cohen or Christman 
+# methods
+
+fit_mod() <- function(type, ...){
+  # fit cohen model
+  if (type == "cohen"){
+    mod <- lm(log(counts[counts != 0]) ~ z[counts != 0])
+  }
+  # fit christman model
+  if (type = "christman"){
+   freq <- counts / parm$ncond
+   mod <- try(nls(freq ~ exp(- (k * z) ^ c), start = start)) 
+  }
+  # fit all other models
+  else mod <- mle_VL(...)
+  return(mod)
+}
+
+
 ## important: starting value have to be in a list!!!
 
 ### experimental
-
-with(VLP, attach(list(z = distances, counts = counts, dist = "gamma", 
-                 subs = FALSE, size = NULL, start = list(shape = 1, mu = 30), 
-                 lower = list(shape = 0.001, mu = 0.001))))
-
-mmm <- with(VLP, mle_VL(z = distances, counts = counts, dist = "erlang2", 
-                        subs = FALSE, size = NULL, start = c(mu = 1), 
-                        lower = c(mu = 0.000001)))
-mmm
-
-mmm <- with(VLP, mle_VL(z = distances, counts = counts, dist = "weibull", 
-                        subs = FALSE, size = NULL,  start = list(shape = 1, mu = 2), 
-                        lower = list(shape = 0.0001, mu = 0.0001)))
-mmm
-
-settings <- read.csv("settings/monte_carlo_settings.csv") %>% tbl_df
-
-(settings1 <- settings[46711, ])
-
-VLP  <- VL_profile(settings = settings1)
-Vls  <- VL_subs(VLP, 50)
-
+# 
+# with(VLP, attach(list(z = distances, counts = counts, dist = "gamma", 
+#                  subs = FALSE, size = NULL, start = list(shape = 1, mu = 30), 
+#                  lower = list(shape = 0.001, mu = 0.001))))
+# 
+# mmm <- with(VLP, mle_VL(z = distances, counts = counts, dist = "erlang2", 
+#                         subs = FALSE, size = NULL, start = c(mu = 1), 
+#                         lower = c(mu = 0.000001)))
+# mmm
+# 
+# mmm <- with(VLP, mle_VL(z = distances, counts = counts, dist = "weibull", 
+#                         subs = FALSE, size = NULL,  start = list(shape = 1, mu = 2), 
+#                         lower = list(shape = 0.0001, mu = 0.0001)))
+# mmm
+# 
+# settings <- read.csv("settings/monte_carlo_settings.csv") %>% tbl_df
+# 
+# (settings1 <- settings[46711, ])
+# 
+# VLP  <- VL_profile(settings = settings1)
+# Vls  <- VL_subs(VLP, 50)
+# 
 
 
