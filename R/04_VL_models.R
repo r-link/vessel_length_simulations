@@ -9,10 +9,11 @@
 ################################################################################
 
 # Contents ---------------------------------------------------------------------
-# 1. mle_VL()  - maximum likelihood estimation of vessel length distributions
-# 2. fit_mod() - function operator that either passes its arguments to mle_VL,
-#                or fits simple (non)linear models based on the Cohen or 
-#                Christman methods
+# 1. mle_VL()    - maximum likelihood estimation of vessel length distributions
+# 2. fit_mod()   - function operator that either passes its arguments to mle_VL,
+#                  or fits simple (non)linear models based on the Cohen or 
+#                  Christman methods
+# 3. get_coefs() - getter function for the coefficients of the fitted models
 
 # 1. mle_VL() ------------------------------------------------------------------
 # function for the maximum likelihood estimation of the parameters of vessel 
@@ -70,20 +71,54 @@ mle_VL <-   function(z, counts, dist, subs = FALSE, size = NULL, start, lower){
 # or fits simple (non)linear models based on the Cohen or Christman 
 # methods
 
-fit_mod() <- function(type, ...){
+fit_mod <- function(type, ...){
   # fit cohen model
   if (type == "cohen"){
     mod <- lm(log(counts[counts != 0]) ~ z[counts != 0])
   }
   # fit christman model
-  if (type = "christman"){
-   freq <- counts / parm$ncond
-   mod <- try(nls(freq ~ exp(- (k * z) ^ c), start = start)) 
+  if (type == "christman"){
+    freq <- counts / size
+    mod <- try(nls(freq ~ exp(- (k * z) ^ c), ...)) 
   }
   # fit all other models
-  else mod <- mle_VL(...)
+  else mod <- mle_VL(dist = type, ...)
   return(mod)
 }
+
+# 3. get_coefs() ---------------------------------------------------------------
+# function operator that gets the estimated average VL and other coefficients from each model
+get_coefs <- function(type, mod){
+  out <- c(mean_est = NA, par2_est = NA, par2_est_name = NA)
+
+  # cohen model
+  if (type == "cohen"){
+    out[1] <- -2/coef(mod)[2]
+  }
+  
+  # christman model
+  if (type == "christman"){
+    k <- coef(mod)[["k"]] 
+    c <- coef(mod)[["c"]]        
+    # minimum vessel length   
+    lower <- ifelse(c < 1, 0, (1 / k) * ((c - 1) / c) ^ (1 / c))
+    # average vessel length (by numerical integration)
+    out[1] <- integrate(function(x) x * Fchristman1(x, c, k), lower, Inf)$value # below minimum length, integral is 0
+    } 
+  
+  # all other models
+  else{ 
+    coefs  <- coefs(mod)
+    out[1] <- coefs[1]
+    if (length(coefs) > 1){
+      out[2] <- coefs[2]
+      out[3] <- names(coefs)[2]
+      }
+  }
+  # return results
+  return(out)
+}
+
 
 
 ## important: starting value have to be in a list!!!
