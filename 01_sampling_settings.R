@@ -109,9 +109,12 @@ parsets1 <- mutate(parsets, run = rep(1:100, 5)) %>%
 parsets1
 
 # join tables to obtain joined dataframe with all settings for the simulated distributions
-settings1 <- left_join(settings, parsets1)  %>% 
-  arrange(distribution, ncuts, nvess, run)    %>%
-  select(code, distribution, ncuts, nvess, run, truemean:par2_name)
+# and add column for random seeds
+set.seed(1) # set seed
+settings1 <- left_join(settings, parsets1)  %>%             # join datasets
+  arrange(distribution, ncuts, nvess, run)    %>%           # arrange rows
+  select(code, distribution, ncuts, nvess, run, truemean:par2_name) %>% # reorder columns
+  mutate(seed = runif(n = nrow(.), min = 0, max = 1000000)) # add column for seeds
 # inspect
 settings1
 
