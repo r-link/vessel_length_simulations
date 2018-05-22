@@ -70,41 +70,41 @@ settings
 # (parameter names are stored in separate columns to make sampling easier)
 parsets <- rbind(
   tibble(distribution = "exp", 
-         truemean  = seq(1, 30, length.out = 100),
-         par1      = 1 / truemean,
+         mean_true = seq(1, 30, length.out = 100),
+         par1      = 1 / mean_true,
          par1_name = "rate",
          par2      = NA,
          par2_name = NA), 
   tibble(distribution = "erlang2", 
-         truemean = seq(1, 30, length.out = 100), 
-         par1      = 2 / truemean,
+         mean_true = seq(1, 30, length.out = 100), 
+         par1      = 2 / mean_true,
          par1_name = "rate",
          par2      = 2,
          par2_name = "shape"), 
   tibble(distribution = "weibull", 
-         truemean = rep(seq(1, 30, length.out = 10), 10), 
+         mean_true = rep(seq(1, 30, length.out = 10), 10), 
          par1_name = "scale",
-         par2 = rep(round(spaces(0.6, 6, 10), digits = 1), each = 10), 
+         par2      = rep(round(spaces(0.6, 6, 10), digits = 1), each = 10), 
          par2_name = "shape",
-         par1      = truemean / gamma(1 + 1 / par2))[, c(1,2,6,3:5)], 
+         par1      = mean_true / gamma(1 + 1 / par2))[, c(1,2,6,3:5)], 
   tibble(distribution = "gamma", 
-         truemean = rep(seq(1, 30, length.out = 10), 10), 
+         mean_true = rep(seq(1, 30, length.out = 10), 10), 
          par1_name = "rate",
          par2      = rep(round(spaces(0.6, 20, 10), digits = 1), each = 10),
          par2_name = "shape",
-         par1      = par2/truemean)[, c(1,2,6,3:5)], 
+         par1      = par2/mean_true)[, c(1,2,6,3:5)], 
   tibble(distribution = "lnorm"      , 
-         truemean = rep(seq(1, 30, length.out = 10), 10),    
+         mean_true = rep(seq(1, 30, length.out = 10), 10),    
          par1_name = "meanlog",
          par2      = rep(round(seq(0.2, 1.2, length.out = 10), digits = 2), each = 10),
          par2_name = "sdlog",
-         par1      = log(truemean) - par2^2 / 2)[, c(1,2,6,3:5)]
+         par1      = log(mean_true) - par2^2 / 2)[, c(1,2,6,3:5)]
   )
 
 # add columns for run, rearrange table             
 parsets1 <- mutate(parsets, run = rep(1:100, 5)) %>% 
   arrange(distribution, run) %>%
-  select(distribution, run, truemean:par2_name)
+  select(distribution, run, mean_true:par2_name)
 #inspect
 parsets1
 
@@ -113,7 +113,7 @@ parsets1
 set.seed(1) # set seed
 settings1 <- left_join(settings, parsets1)  %>%             # join datasets
   arrange(distribution, ncuts, nvess, run)    %>%           # arrange rows
-  select(code, distribution, ncuts, nvess, run, truemean:par2_name) %>% # reorder columns
+  select(code, distribution, ncuts, nvess, run, mean_true:par2_name) %>% # reorder columns
   mutate(seed = runif(n = nrow(.), min = 0, max = 1000000)) # add column for seeds
 # inspect
 settings1
