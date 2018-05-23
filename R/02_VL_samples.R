@@ -103,17 +103,18 @@ VL_profile <- function(settings){
   counts <- sapply(distances, function(x) sum(VL_cut >= x))
   
   # store all created objects in a list
-  out <- list(counts    = counts,
-              distances = distances,
-              VL_true   = VL_true,
-              VL_biased = VL_biased,
-              VL_cut    = VL_cut,
-              left_end  = left_end,
-              right_end = right_end,
-              L         = L,
-              n         = n,
-              lcutoff   = lcutoff,
-              settings  = settings
+  out <- list(counts     = counts,
+              distances  = distances,
+              VL_true    = VL_true,
+              VL_biased  = VL_biased,
+              VL_cut     = VL_cut,
+              left_end   = left_end,
+              right_end  = right_end,
+              L          = L,
+              n          = n,
+              lcutoff    = lcutoff,
+              settings   = settings,
+              nvess_true = length(VL_biased)
               )
   
   # return object with the results
