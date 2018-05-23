@@ -9,16 +9,50 @@
 ################################################################################
 
 # Contents ---------------------------------------------------------------------
-# 1. mle_VL()    - maximum likelihood estimation of vessel length distributions
-# 2. fit_mod()   - function operator that either passes its arguments to mle_VL,
+# 1. Internals   - getter functions for starting values and lower bounds for 
+#                  bounded estimation
+# 2. mle_VL()    - maximum likelihood estimation of vessel length distributions
+# 3. fit_mod()   - function operator that either passes its arguments to mle_VL,
 #                  or fits simple (non)linear models based on the Cohen or 
 #                  Christman methods
-# 3. get_coefs() - getter function for the coefficients of the fitted models
+# 4. get_coefs() - getter function for the coefficients of the fitted models
 
-# 1. mle_VL() ------------------------------------------------------------------
+# 1. Internals -----------------------------------------------------------------
+# a) .get_start() - getter function for starting values
+.get_start <- function(z, counts, dist){
+  # return empty starting values if dist == "cohen"
+  if (dist == "cohen") return(NULL)
+  
+  # crude estimate of average vessel length: x intercept of line through first 
+  # two counts (exluding counts that do not differ from first count)
+  which <- c(1, which(counts < counts[1])[1])
+  coefs <- coef(lm(counts[which] ~ z[which]))
+  mu_start <- - coefs[1]/coefs[2]
+  
+  # return starting values depending on distribution
+  if (dist %in% c("exp", "erlang2")) return(list(mu = mu_start))
+  if (dist %in% c("weibull", "gamma")) return(list(mu = mu_start, shape = 1))
+  if (dist == "lnorm") return(list(mu = mu_start, sdlog = 1))
+  if (dist  == "christman") return(list(k = 1/mu_start, c = 1))
+}
+
+# b) .get_lower() - getter function for lower bounds in bounded estimation
+.get_lower <- function(dist){
+  # return nothing for literature models
+  if (dist %in% c("cohen", "christman")) return(NULL)
+  
+  # return starting values depending on distribution
+  if (dist %in% c("exp", "erlang2")) return(list(mu = 0.1))
+  if (dist %in% c("weibull", "gamma")) return(list(mu = 0.1, shape = 0.01))
+  if (dist == "lnorm") return(list(mu = 0.1, sdlog = 0.01))
+}
+
+
+# 2. mle_VL() ------------------------------------------------------------------
 # function for the maximum likelihood estimation of the parameters of vessel 
 # length distributions (based on the mle2 function from package bbmle)
-mle_VL <-   function(z, counts, dist, subs = FALSE, size = NULL, start, lower){
+mle_VL <-   function(z, counts, dist, subs = FALSE, size = NULL, start, lower, 
+                     control = list(eval.max = 999, iter.max = 999)){
   # load bbmle package
   require(bbmle)
   
@@ -49,7 +83,8 @@ mle_VL <-   function(z, counts, dist, subs = FALSE, size = NULL, start, lower){
                        data = data,
                        optimizer = "nlminb",
                        start = start,
-                       lower = lower)
+                       lower = lower,
+                       control = control)
     
   } else {  # model fitting with subsampling estimator
     # get model formula
@@ -61,32 +96,71 @@ mle_VL <-   function(z, counts, dist, subs = FALSE, size = NULL, start, lower){
                                    size = size, p_dist= p_dist), # for p_dist see above
                        optimizer = "nlminb",
                        start = start,
-                       lower = lower)
+                       lower = lower,
+                       control = control)
   }
   return(mod)
 }
 
-# 2. fit_mod() -----------------------------------------------------------------
+# 3. fit_mod() -----------------------------------------------------------------
 # function operator that either passes its arguments to mle_VL, 
 # or fits simple (non)linear models based on the Cohen or Christman 
 # methods
+# for the Christman method and the mle_VL models, sometimes the models do not 
+# converge with the standard starting values provided by .get_start(). To reduce
+# the amount of failed models, these models are re-run 10 times with different 
+# starting values
 
-fit_mod <- function(type, ...){
+fit_mod <- function(type, z, counts, dist, subs, size){
+  # get initial starting values
+  start <- .get_start(z = z, counts = counts, dist = dist)
+  # set counter
+  t <- 1
+  # set output value if model fails to NA
+  mod <- NA
   # fit cohen model
   if (type == "cohen"){
-    mod <- lm(log(counts[counts != 0]) ~ z[counts != 0])
+    try(mod <- lm(log(counts[counts != 0]) ~ z[counts != 0]))
   }
   # fit christman model
   if (type == "christman"){
     freq <- counts / size
-    mod <- try(nls(freq ~ exp(- (k * z) ^ c), ...)) 
+    repeat {
+      # try to fit model
+      try(mod <- nls(freq ~ exp(- (k * z) ^ c), start = start))
+      # break if model converged (second if clause checks whether it truly converged)
+      if (!is.na(mod)) break
+      # advance counter
+      t <- t + 1
+      # break if model did not converge after 10 trials
+      if (t > 10) break 
+      # perturb starting values
+      start[[1]] <- 1 / runif(1, 0.1, 0.5 * max(z))
+      start[[2]] <- runif(1, 0.2, 1.2)
+    }
   }
+  
   # fit all other models
-  else mod <- mle_VL(dist = type, ...)
-  return(mod)
+  else{
+    lower <- .get_lower(dist = dist)
+    repeat {
+      try(mod <- mle_VL(z = z, counts = counts, dist = type, subs  = subs, 
+                        size = size, start = start, lower = lower))
+      # break if model converged (second if clause checks whether it truly converged)
+      if (!is.na(mod)) {if (!is.na(summary(mod)@coef[2]) )  break}
+      # advance counter
+      t <- t + 1
+      # break if model did not converge after 10 trials
+      if (t > 10) break
+      # perturb starting values
+      start[[1]] <- runif(1, 0.1, 0.5 * max(z))
+      if (length(start) > 1) start[[2]] <- ifelse(dist == "lnorm", runif(1, 0.2, 1.2), runif(1, 0.6, 6))
+    }
+  }
+  return(list(mod = mod, start = start, t = t))
 }
 
-# 3. get_coefs() ---------------------------------------------------------------
+# 4. get_coefs() ---------------------------------------------------------------
 # function operator that gets the estimated average VL and other coefficients from each model
 get_coefs <- function(type, mod){
   out <- c(mean_est = NA, par2_est = NA, par2_est_name = NA)
