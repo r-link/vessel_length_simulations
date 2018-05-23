@@ -72,7 +72,7 @@ VL_profile <- function(settings){
   
   # number of vessels to simulate in order to obtain an average of nvess vessels
   # at each cutting plane
-  n <- with(settings, ceiling(2 * nvess * L / truemean)) 
+  n <- with(settings, ceiling(2 * nvess * L / mean_true)) 
   
   # random sample of vessel lengths
   VL_true  <- rdist(n = n, settings = settings)
