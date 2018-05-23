@@ -11,7 +11,8 @@
 # Contents ---------------------------------------------------------------------
 # 1. Functions for handling the Christman model
 # 2. Internals for the evaluation of similarity between distributions 
-# 3. Percent overlap between two distributions
+# 3. percOL() - percent overlap between two distributions
+# 4. get_CI() - confidence intervals for the mle2-based models 
 
 # 1. Functions for handling the Christman model --------------------------------
 
@@ -61,7 +62,7 @@ Fchristman1 <-function(x, c, k){
     return(function(x)  Fchristman1(x, c = parm[[1]], k = parm[[2]]))} 
 }
 
-# 3. Percent overlap between two distributions ---------------------------------
+# 3. percOL - percent overlap between two distributions ------------------------
 percOL <- function(mod, type, settings){
   # true distribution
   fx    <- .truedist(settings)  
@@ -72,3 +73,26 @@ percOL <- function(mod, type, settings){
   }    
 
 
+# 4. get_CI() - confidence intervals for the mle2-based models -----------------
+get_CI <- function(mod){
+  # empty objects for confidence intervals
+  ci     <- NA
+  ciquad <- NA
+  # empty vectors for confidence intervals
+  ci_out     <- rep(NA_real_, 4)
+  ciquad_out <- rep(NA_real_, 4)
+  # compute confidence intervals
+  try(ci     <- confint(mod, method = "spline", maxsteps = 200, try_harder =T, quietly =TRUE), silent = TRUE)
+  try(ciquad <- confint(mod, method = "quad",   maxsteps = 200, try_harder =T, quietly =TRUE), silent = TRUE)
+  # reorder confidence intervals
+  if (length(ci) == 2) {
+    try(ci_out[1:2]     <- ci, silent = TRUE)
+    try(ciquad_out[1:2] <- ciquad, silent = TRUE)
+  } else{
+    try(ci_out[1:2]     <- ci[1,], silent = TRUE)
+    try(ci_out[3:4]     <- ci[2,], silent = TRUE)
+    try(ciquad_out[1:2] <- ciquad[1,], silent = TRUE)
+    try(ciquad_out[3:4] <- ciquad[2,], silent = TRUE)
+  }
+  return(c(ci_out, ciquad_out))
+}
