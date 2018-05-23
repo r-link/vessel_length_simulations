@@ -29,7 +29,7 @@ Fchristman1 <-function(x, c, k){
 # 2. Internals for the evaluation of similarity between distributions ---------- 
 # a) getter function for true distribution based on the model settings
 .truedist <- function(settings) {
-  if(settings$distribution == "exponential"){
+  if(settings$distribution == "exp"){
     return(function(x) dexp(x, rate = 1 / settings$mean_true))}
   if(settings$distribution == "erlang2"){
     return(function(x) dgamma(x, shape = 2, rate = 2 / settings$mean_true))} 
@@ -46,7 +46,7 @@ Fchristman1 <-function(x, c, k){
 # b) getter function for predicted distribution based on a model object
 .preddist <- function(mod, type) {
   parm <- coef(mod)
-  if(type == "exponential"){
+  if(type == "exp"){
     return(function(x) dexp(x, rate = 1 / parm[[1]]))}
   if(type == "erlang2"){
     return(function(x) dgamma(x, shape = 2, rate = 2 / parm[[1]]))} 
