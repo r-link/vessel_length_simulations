@@ -26,48 +26,49 @@ Fchristman1 <-function(x, c, k){
 
 
 # 2. Internals for the evaluation of similarity between distributions ---------- 
-# a) getter function for true distribution based on a set of parameters 
-#    (i.e., a row of the results table)
-.truedist <- function(parm) {
-  if(parm$distribution == "exponential"){
-    return(function(x, parm) dexp(x, rate = 1 / parm$truemean))}
-  if(parm$distribution == "erlang2"){
-    return(function(x, parm) dgamma(x, shape = 2, rate = 2 / parm$truemean))} 
-  if(parm$distribution == "weibull"){
-    return(function(x, parm) dweibull(x, shape = parm$trueshape, scale = parm$truemean / 
-                                        gamma(1 + 1 / parm$trueshape)))} 
-  if(parm$distribution == "gamma"){
-    return(function(x, parm) dgamma(x, shape = parm$trueshape, rate = parm$trueshape / parm$truemean))} 
-  if(parm$distribution == "lnorm"){
-    return(function(x, parm) dlnorm(x, meanlog = log(parm$truemean) - parm$truesdlog ^ 2 / 2, 
-                                    sdlog = parm$truesdlog))}
+# a) getter function for true distribution based on the model settings
+.truedist <- function(settings) {
+  if(settings$distribution == "exponential"){
+    return(function(x) dexp(x, rate = 1 / settings$mean_true))}
+  if(settings$distribution == "erlang2"){
+    return(function(x) dgamma(x, shape = 2, rate = 2 / settings$mean_true))} 
+  if(settings$distribution == "weibull"){
+    return(function(x) dweibull(x, shape = settings$par2, scale = settings$mean_true / 
+                                        gamma(1 + 1 / settings$par2)))} 
+  if(settings$distribution == "gamma"){
+    return(function(x) dgamma(x, shape = settings$par2, rate = settings$par2 / settings$mean_true))} 
+  if(settings$distribution == "lnorm"){
+    return(function(x) dlnorm(x, meanlog = log(settings$mean_true) - settings$par2 ^ 2 / 2, 
+                                    sdlog = settings$par2))}
 }
 
-# b) getter function for predicted distribution based on a set of parameters
-.preddist <- function(parm) {
-  if(parm$model == "exponential"){
-    return(function(x, parm) dexp(x, rate = 1 / parm$mean))}
-  if(parm$model == "erlang2"){
-    return(function(x, parm) dgamma(x, shape = 2, rate = 2 / parm$mean))} 
-  if(parm$model == "weibull"){
-    return(function(x, parm) dweibull(x, shape = parm$shape, scale = parm$mean / gamma(1 + 1 / parm$shape)))} 
-  if(parm$model == "gamma"){
-    return(function(x, parm) dgamma(x, shape = parm$shape, rate = parm$shape / parm$mean))} 
-  if(parm$model == "lnorm"){
-    return(function(x, parm) dlnorm(x, meanlog = log(parm$mean) - parm$sdlog ^ 2 / 2, sdlog = parm$sdlog))} 
-  if(parm$model == "cohen"){
-    return(function(x, parm)  dgamma(x, shape = 2, rate = 2 / parm$mean))} 
-  if(parm$model == "christman"){
-    return(function(x, parm)  Fchristman1(x, c = parm$christman_c, k = parm$christman_k))} 
+# b) getter function for predicted distribution based on a model object
+.preddist <- function(mod, type) {
+  parm <- coef(mod)
+  if(type == "exponential"){
+    return(function(x) dexp(x, rate = 1 / parm[[1]]))}
+  if(type == "erlang2"){
+    return(function(x) dgamma(x, shape = 2, rate = 2 / parm[[1]]))} 
+  if(type == "weibull"){
+    return(function(x) dweibull(x, shape = parm[[2]], scale = parm[[1]] / gamma(1 + 1 / parm[[2]])))} 
+  if(type == "gamma"){
+    return(function(x) dgamma(x, shape = parm[[2]], rate = parm[[2]] / parm[[1]]))} 
+  if(type == "lnorm"){
+    return(function(x) dlnorm(x, meanlog = log(parm[[1]]) - parm[[2]] ^ 2 / 2, sdlog = parm[[2]]))} 
+  if(type == "cohen"){
+    return(function(x)  dgamma(x, shape = 2, rate = 2 / parm[[1]]))} 
+  if(type == "christman"){
+    return(function(x)  Fchristman1(x, c = parm[[1]], k = parm[[2]]))} 
 }
 
 # 3. Percent overlap between two distributions ---------------------------------
-percOL <- function(parm){
+percOL <- function(mod, type, settings){
   # true distribution
-  fx    <- .truedist(parm)  
+  fx    <- .truedist(settings)  
   # predicted distribution
-  fhatx <- .preddist(parm)
+  fhatx <- .preddist(mod, type)
   # overlap between distributions: integral over minimum of their density functions
-  return(integrate( function(x) 100 * pmin(fhatx(x), fx(x)), lower = 0, upper = Inf)$value)}    
+  return(integrate(function(x) 100 * pmin(fhatx(x), fx(x)), lower = 0, upper = Inf)$value)
+  }    
 
 
