@@ -2,16 +2,13 @@
 ################################################################################
 ########
 ########      Monte Carlo simulations of vessel length measurements 
-########           based on the subsampling estimator
 ########
 ########                Author: Roman Link (rlink@gwdg.de)
 ########
 ################################################################################
 ################################################################################
 
-# Aim: Monte Carlo simulation of the vessel length estimation process based on 
-#      the assumption that only a subsample of the filled and empty vessels in 
-#      each cross-section are counted
+# Aim: Monte Carlo simulation of the vessel length estimation process 
 
 # Sections:
 # 1. Prerequisites     
@@ -67,6 +64,8 @@ out <- tibble(# relevant model output
   model         = models,      # type of fitted model
   converged     = NA,          # logical indicator for model convergence
   mean_est      = NA_real_,    # estimated mean VL
+  par1_est      = NA_real_,    # estimated first parameter
+  par1_est_name = NA_real_,    # name of first parameter
   par2_est      = NA_real_,    # estimated second parameter (if applicable)
   par2_est_name = NA_real_,    # name of second parameter (if applicable)
   OVL           = NA_real_,    # percent overlap between true and estimated VL distribution
@@ -108,7 +107,7 @@ getDoParWorkers()  # check if number of cores is set to correct value
 
 # outer loop: loop over all modeling settings (done in parallel on 4 cores)
 output <- foreach(i = 1:nrow(settings)) %dopar% {
-# output <- foreach(i = 1:10) %dopar% {
+# output <- foreach(i = 401:414) %dopar% {
   # paste number of iteration to the socket created above to track progress 
   log_fun("Iteration No. %d of 50000", i)
   
@@ -156,12 +155,14 @@ output <- foreach(i = 1:nrow(settings)) %dopar% {
     # get coefficients, percent overlap, confidence intervals and coverage for converged models
     if (!is.null(mod)){
       # define empty object for coefficients
-      coefs <- rep(NA, 3)
+      coefs <- rep(NA, 5)
       # try to extract coefficients from model object with the get_coefs function from "R/04_VL_models.R"
       try(coefs <- get_coefs(type = type, mod = mod))
       temp[j, "mean_est"]      <- coefs[1]
-      temp[j, "par2_est"]      <- coefs[2]
-      temp[j, "par2_est_name"] <- coefs[3]
+      temp[j, "par1_est"]      <- coefs[2]
+      temp[j, "par1_est_name"] <- coefs[3]
+      temp[j, "par2_est"]      <- coefs[4]
+      temp[j, "par2_est_name"] <- coefs[5]
       
       # get percent overlap
       try(temp[j, "OVL"] <- percOL(mod = mod, type = type, settings = settings[i, ]))
@@ -220,12 +221,14 @@ output <- foreach(i = 1:nrow(settings)) %dopar% {
       # get coefficients, percent overlap, confidence intervals and coverage for converged models
       if (!is.null(mod)){
         # define empty object for coefficients
-        coefs <- rep(NA, 3)
+        coefs <- rep(NA, 5)
         # try to extract coefficients from model object with the get_coefs function from "R/04_VL_models.R"
         try(coefs <- get_coefs(type = type, mod = mod))
         temp1[j, "mean_est"]      <- coefs[1]
-        temp1[j, "par2_est"]      <- coefs[2]
-        temp1[j, "par2_est_name"] <- coefs[3]
+        temp1[j, "par1_est"]      <- coefs[2]
+        temp1[j, "par1_est_name"] <- coefs[3]
+        temp1[j, "par2_est"]      <- coefs[4]
+        temp1[j, "par2_est_name"] <- coefs[5]
         
         # get percent overlap
         try(temp1[j, "OVL"] <- percOL(mod = mod, type = type, settings = settings[i, ]))
