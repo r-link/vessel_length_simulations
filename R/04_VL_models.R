@@ -124,7 +124,8 @@ fit_mod <- function(type, z, counts, subs, size){
     freq <- counts / size
     repeat {
       # try to fit model
-      try(mod <- nls(freq ~ exp(- (k * z) ^ c), start = start), silent = TRUE)
+      try(mod <- nls(freq ~ exp(- (k * z) ^ c), start = start, 
+                     control = nls.control (maxiter = 999)), silent = TRUE)
       # break if model converged (second if clause checks whether it truly converged)
       if (!is.null(mod)) break
       # advance counter
@@ -160,17 +161,21 @@ fit_mod <- function(type, z, counts, subs, size){
 # 4. get_coefs() ---------------------------------------------------------------
 # function operator that gets the estimated average VL and other coefficients from each model
 get_coefs <- function(type, mod){
-  res <- c(mean_est = NA, par2_est = NA, par2_est_name = NA)
+  res <- c(mean_est = NA,  par1_est = NA, par1_est_name = NA, par2_est = NA, par2_est_name = NA)
 
   # cohen model
   if (type == "cohen"){
     res[1] <- -2/coef(mod)[2]
+    res[2] <- coef(mod)[2]
+    res[3] <- "lambda"
   }
   
   # christman model
   if (type == "christman"){
-    k <- coef(mod)[["k"]] 
-    c <- coef(mod)[["c"]]        
+    res[2] <-  k <- coef(mod)[["k"]] 
+    res[3] <- "k"
+    res[4] <-  c <- coef(mod)[["c"]]    
+    res[5] <- "c" 
     # minimum vessel length   
     lower <- ifelse(c < 1, 0, (1 / k) * ((c - 1) / c) ^ (1 / c))
     # average vessel length (by numerical integration)
@@ -180,10 +185,11 @@ get_coefs <- function(type, mod){
   # all other models
   if (!(type %in% c("cohen", "christman") )) {
     coefs  <- coef(mod)
-    res[1] <- coefs[1]
+    res[1] <- res[2] <- coefs[1]
+    res[3] <- "mu"
     if (length(coefs) > 1){
-      res[2] <- coefs[2]
-      res[3] <- names(coefs)[2]
+      res[4] <- coefs[2]
+      res[5] <- names(coefs)[2]
       }
   }
   # return results
