@@ -59,7 +59,7 @@ Fchristman1 <-function(x, c, k){
   if(type == "cohen"){
     return(function(x)  dgamma(x, shape = 2, rate = 2 / parm[[1]]))} 
   if(type == "christman"){
-    return(function(x)  Fchristman1(x, c = parm[[1]], k = parm[[2]]))} 
+    return(function(x)  Fchristman1(x, c = parm[["c"]], k = parm[["k"]]))} 
 }
 
 # 3. percOL - percent overlap between two distributions ------------------------
