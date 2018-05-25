@@ -25,7 +25,7 @@
 
 ## load packages
 # list of packages 
-pkgs <-c("tidyverse", "magrittr")        
+pkgs <-c("tidyverse", "magrittr", "ggthemes", "scales")        
 
 # check for existence of packages and install if necessary
 to_install<-pkgs[!(pkgs %in% installed.packages()[, 1])]
@@ -44,6 +44,9 @@ nice <- function(num, digits){
   # return output
   return(out)
 } 
+
+# load ggplot publication themes
+source("R/gg_publication_themes_20180305.R")
 
 #	2. Load and prepare model output ---------------------------------------------
 
@@ -66,7 +69,10 @@ data <- bind_rows(mutate(data_exh, Type = "Exhaustive"),
     Distribution = factor(distribution, levels =c("exp", "erlang2","gamma","weibull","lnorm"), 
                           labels = c("Exponential", "Erlang(2)","Gamma","Weibull","Log-normal"),
                           ordered =T),
-    SRE =    (mean_est - mean_true)/mean_true #   signed relative error
+    SRE =    (mean_est - mean_true)/mean_true,                   # get signed relative error
+    lmean_best = coalesce(lmean, lmeanquad),                     # get bet available confidence intervals for all models 
+    umean_best = coalesce(umean, umeanquad),                     # (spline-based if available, quadratic approximation if not)
+    included   = mean_true > lmean_best & mean_true < umean_best # get indicator for estimates that are within the CI
   ) %>%
   arrange(Type, distribution, ncuts, nvess, run, model) 
 data
@@ -143,9 +149,6 @@ write.csv(table_OVL, "output/table_overlap.csv", row.names = FALSE)
 (table_coverage <- data %>%
   filter(model == distribution,  # only for models fit on the correct distribution
          nvess >= 500) %>%       # ...and fit onto the same samples
-  mutate(lmean_best = coalesce(lmean, lmeanquad), # get bet available confidence intervals for all models 
-         umean_best = coalesce(umean, umeanquad), # (spline-based if available, quadratic approximation if not)
-         included   = mean_true > lmean_best & mean_true < umean_best) %>% # get indicator for estimates that are within the CI
   group_by(Type, Distribution) %>%  # group by distribution 
   summarize(coverage = mean(included, na.rm = TRUE)) %>% # get averages of coverage
   spread(key = Distribution, value = coverage) )  # spread table to wide format
@@ -155,3 +158,126 @@ write.csv(table_coverage, "output/table_coverage.csv", row.names = FALSE)
 
 
 #	7. Figures for supplementary material -----------------------------------------
+# aggregate data for plotting
+plotdat <- data %>%
+  group_by(Type, ncuts, nvess, Model, Distribution)%>%   # group by relevant variables
+  summarize(MSRE     = mean(SRE, na.rm = TRUE),          # summarize variables to plot
+            OVL      = mean(OVL / 100, na.rm = TRUE),      
+            coverage = mean(included, na.rm = TRUE))%>%
+  mutate(Ncuts = factor(paste(ncuts, "cuts"),            # create new variable for number of cuts (for facetting)
+                        levels = (paste(c(5, 10, 15, 20, 25, 30, 40, 50, 75, 100),"cuts")),
+                        ordered =T))
+
+# a) bias vs ncuts:  exhaustive sampling
+plotdat %>% 
+  filter(Type == "Exhaustive") %>%
+  ggplot(aes(x = nvess / 1000, y = MSRE, col = Model)) + 
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_line(alpha = 0.8, lwd = 0.4)+
+  facet_grid(Distribution ~ Ncuts,  scales = "free_y") +
+  theme_Publication() + 
+  scale_colour_Publication() +
+  xlab("Number of vessels [10⁴]") +
+  ylab("Mean signed relative error")+  
+  theme(plot.margin=unit(c(0, 0, 0, 0),"mm"),
+        legend.position = "bottom",
+        axis.text = element_text(size = 7),
+        axis.title = element_text(vjust = -0.2, size = 11))
+
+# export graphic
+ggsave("figures/bias_exh_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+
+# b) bias vs ncuts: subsampling estimator
+plotdat %>% 
+  filter(Type == "Subsamples") %>% 
+  ggplot(aes(x = nvess / 10000, y = MSRE, col = Model)) + 
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_line(alpha = 0.8, lwd = 0.4)+
+  facet_grid(Distribution ~ Ncuts,  scales = "free_y") +
+  theme_Publication() + 
+  scale_colour_Publication() +
+  xlab("Number of vessels [10⁴]") +
+  ylab("Mean signed relative error")+  
+  theme(plot.margin=unit(c(0, 0, 0, 0),"mm"),
+        legend.position = "bottom",
+        axis.text = element_text(size = 7),
+        axis.title = element_text(vjust = -0.2, size = 11))
+
+# export graphic
+ggsave("figures/bias_sub_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+
+# c) percent overlap: exhaustive sampling
+plotdat %>% 
+  filter(Type == "Exhaustive") %>%
+  ggplot(aes(x = nvess / 1000, y = OVL, col = Model)) + 
+  geom_hline(yintercept = 1, lty = 2) +
+  geom_line(alpha = 0.8, lwd = 0.4)+
+  facet_grid(Distribution ~ Ncuts,  scales = "free_y") +
+  theme_Publication() + 
+  scale_colour_Publication() +
+  xlab("Number of vessels [10⁴]") +
+  ylab("Average overlapping coefficent")+  
+  theme(plot.margin=unit(c(0, 0, 0, 0),"mm"),
+        legend.position = "bottom",
+        axis.text = element_text(size = 7),
+        axis.title = element_text(vjust = -0.2, size = 11))
+
+# export graphic
+ggsave("figures/overlap_exh_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+
+# d) percent overlap: subsampling estimator
+plotdat %>% 
+  filter(Type == "Subsamples") %>%
+  ggplot(aes(x = nvess / 10000, y = OVL, col = Model)) + 
+  geom_hline(yintercept = 1, lty = 2) +
+  geom_line(alpha = 0.8, lwd = 0.4)+
+  facet_grid(Distribution ~ Ncuts,  scales = "free_y") +
+  theme_Publication() + 
+  scale_colour_Publication() +
+  xlab("Number of vessels [10⁴]") +
+  ylab("Average overlapping coefficent")+  
+  theme(plot.margin=unit(c(0, 0, 0, 0),"mm"),
+        legend.position = "bottom",
+        axis.text = element_text(size = 7),
+        axis.title = element_text(vjust = -0.2, size = 11))
+
+# export graphic
+ggsave("figures/overlap_sub_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+
+# e) coverage probabilities: exhaustive sampling
+plotdat %>% 
+  filter(Type == "Exhaustive") %>%
+  ggplot(aes(x = nvess / 1000, y = coverage, col = Model)) + 
+  geom_hline(yintercept = 1, lty = 2) +
+  geom_line(alpha = 0.8, lwd = 0.4)+
+  facet_grid(Distribution ~ Ncuts,  scales = "free_y") +
+  theme_Publication() + 
+  scale_colour_Publication() +
+  xlab("Number of vessels [10⁴]") +
+  ylab("Coverage probability of confidence intervals")+  
+  theme(plot.margin=unit(c(0, 0, 0, 0),"mm"),
+        legend.position = "bottom",
+        axis.text = element_text(size = 7),
+        axis.title = element_text(vjust = -0.2, size = 11))
+
+# export graphic
+ggsave("figures/coverage_exh_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+
+# f) coverage probabilities: subsampling estimator
+plotdat %>% 
+  filter(Type == "Subsamples") %>%
+  ggplot(aes(x = nvess / 10000, y = coverage, col = Model)) + 
+  geom_hline(yintercept = 1, lty = 2) +
+  geom_line(alpha = 0.8, lwd = 0.4)+
+  facet_grid(Distribution ~ Ncuts,  scales = "free_y") +
+  theme_Publication() + 
+  scale_colour_Publication() +
+  xlab("Number of vessels [10⁴]") +
+  ylab("Coverage probability of confidence intervals")+  
+  theme(plot.margin=unit(c(0, 0, 0, 0),"mm"),
+        legend.position = "bottom",
+        axis.text = element_text(size = 7),
+        axis.title = element_text(vjust = -0.2, size = 11))
+
+# export graphic
+ggsave("figures/coverage_sub_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
