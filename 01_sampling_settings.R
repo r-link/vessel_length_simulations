@@ -56,8 +56,8 @@ dists <- c("exp", "erlang2", "weibull", "gamma", "lnorm")
 settings <- expand.grid(distribution = dists, run = runs, ncuts = ncuts, nvess = nvess,
                         stringsAsFactors = FALSE)%>% 
   mutate(code = paste0(substr(distribution, 1, 3), "_cut", # ID for each simulation
-                              formatC(ncuts, width = 3, flag = 0), "_cond", 
-                              formatC(nvess, width = 3, flag = 0), "_rep", 
+                              formatC(ncuts, width = 3, flag = 0), "_vess", 
+                              formatC(nvess, width = 4, flag = 0), "_rep", 
                               formatC(run, width = 3, flag = 0))) %>% 
   select(distribution, run, ncuts:code) %>%                        # reorder columns
   arrange(distribution, ncuts, nvess, run) %>%                    # reorder rows
