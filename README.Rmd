@@ -1,26 +1,28 @@
-Simulation of vessel length distributions: Supplementary material 3 for Link et al., 2018
-================
+---
+title: "Simulation of vessel length distributions: Supplementary material 3 for Link et al., 2018"
+output: github_document
+---
 
-Description
------------
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-This repository contains part 3 of the supplementary material of Link et al., 2018, *Maximum likelihood estimation of xylem vessel length distributions*.
+## Description
+This repository contains part 3 of the supplementary material of Link et al., 2018, *Maximum likelihood estimation of xylem vessel length distributions*. 
 
 The scripts contained in this repository were used to generate and analyze the Monte Carlo samples of vessel length distributions discussed in said paper, and we refer to the full text for full documentation.
 
-Contents and structure
-----------------------
+## Contents and structure
+The repository is structured as follows: 
 
-The repository is structured as follows:
-
-``` text
+```{r, tidy=FALSE, eval=FALSE, highlight=FALSE }
 /         basic scripts:
           01_sampling_settings.R  -- creates and exports the table that stores the settings
                                      used for the random samples
           02_model_fitting.R      -- performs random sampling, model fitting and evaluation
           03_figures_and_output.R -- creates the figures and tables for the publication
 /figures  -- figures with model results
-/output   -- model output and tables used in the paper
+/output	  -- model output and tables used in the paper
 /R        -- 01_VL_distributions.r            -- utility functions for vessel length analyses
              02_VL_samples.R                  -- functions for the generation of random samples of
                                                  vessel lengths
@@ -33,6 +35,8 @@ The repository is structured as follows:
                                                  of vessel length predictions
              gg_publication_themes_20180305.R -- settings for graphics
 /settings -- table with the settings defined in "01_sampling_settings.R"      
+                
 ```
 
-The following figure shows a flowchart of the work flow of the project: ![flowchart](figures/flowchart.png)
+The following figure shows a flowchart of the work flow of the project:
+![flowchart](figures/flowchart.png)
