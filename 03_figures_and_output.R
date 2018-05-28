@@ -25,7 +25,7 @@
 
 ## load packages
 # list of packages 
-pkgs <-c("tidyverse", "magrittr", "ggthemes", "scales")        
+pkgs <-c("tidyverse", "magrittr", "grid", "ggthemes", "scales")        
 
 # check for existence of packages and install if necessary
 to_install<-pkgs[!(pkgs %in% installed.packages()[, 1])]
@@ -46,7 +46,7 @@ nice <- function(num, digits){
 } 
 
 # load ggplot publication themes
-source("R/gg_publication_themes_20180305.R")
+source("R/06_gg_themes.R")
 
 #	2. Load and prepare model output ---------------------------------------------
 
