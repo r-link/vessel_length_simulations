@@ -160,10 +160,13 @@ write.csv(table_coverage, "output/table_coverage.csv", row.names = FALSE)
 #	7. Figures for supplementary material -----------------------------------------
 # aggregate data for plotting
 plotdat <- data %>%
-  group_by(Type, ncuts, nvess, Model, Distribution)%>%   # group by relevant variables
+  filter(!(model %in% c("christman", "cohen"))) %>%      # exclude literature models from
+                                                         # figures in supplementary material 
+                                                         # (as requested by Reviewer 1)
+  group_by(Type, ncuts, nvess, Model, Distribution) %>%  # group by relevant variables
   summarize(MSRE     = mean(SRE, na.rm = TRUE),          # summarize variables to plot
             OVL      = mean(OVL / 100, na.rm = TRUE),      
-            coverage = mean(included, na.rm = TRUE))%>%
+            coverage = mean(included, na.rm = TRUE)) %>%
   mutate(Ncuts = factor(paste(ncuts, "cuts"),            # create new variable for number of cuts (for facetting)
                         levels = (paste(c(5, 10, 15, 20, 25, 30, 40, 50, 75, 100),"cuts")),
                         ordered =T))
