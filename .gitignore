@@ -1,6 +1,6 @@
-.figures/print/*
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 doc/*
+figures/print/*
