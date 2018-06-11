@@ -181,7 +181,7 @@ write.csv(table_thresh, "output/accuracy_tresholds.csv", row.names = FALSE)
 
 table_thresh %>% 
   group_by(Type, Distribution) %>%
-  summarize(thresh = min(nvess[OVL >= 95]))
+  summarize(thresh = min(nvess[OVL >= 90]))
 
 
 #	8. Figures for supplementary material -----------------------------------------
@@ -215,8 +215,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/bias_exh_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
-ggsave("figures/print/bias_exh_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
+ggsave("figures/screen/figS2.1_bias_exh_fullpage_300dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/figS2.1_bias_exh_fullpage_1000dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # b) bias vs ncuts: subsampling estimator
 plotdat %>% 
@@ -235,8 +235,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/bias_sub_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
-ggsave("figures/print/bias_sub_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
+ggsave("figures/screen/figS2.2_bias_sub_fullpage_300dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/figS2.2_bias_sub_fullpage_1000dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # c) percent overlap: exhaustive sampling
 plotdat %>% 
@@ -255,8 +255,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/overlap_exh_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
-ggsave("figures/print/overlap_exh_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
+ggsave("figures/screen/figS2.3_overlap_exh_fullpage_300dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/figS2.3_overlap_exh_fullpage_1000dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # d) percent overlap: subsampling estimator
 plotdat %>% 
@@ -275,8 +275,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/overlap_sub_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
-ggsave("figures/print/overlap_sub_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
+ggsave("figures/screen/figS2.4_overlap_sub_fullpage_300dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/figS2.4_overlap_sub_fullpage_1000dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # e) coverage probabilities: exhaustive sampling
 plotdat %>% 
@@ -295,8 +295,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/coverage_exh_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
-ggsave("figures/print/coverage_exh_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
+ggsave("figures/screen/figS2.5_coverage_exh_fullpage_300dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/figS2.5_coverage_exh_fullpage_1000dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # f) coverage probabilities: subsampling estimator
 plotdat %>% 
@@ -315,5 +315,5 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/coverage_sub_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
-ggsave("figures/print/coverage_sub_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
+ggsave("figures/screen/figS2.6_coverage_sub_fullpage_300dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/figS2.6_coverage_sub_fullpage_1000dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
