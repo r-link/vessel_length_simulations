@@ -19,7 +19,8 @@
 #	4. Table for bias & precision 
 #	5. Table for overall accuracy (percent overlap)
 #	6. Table for coverage 
-#	7. Figures for supplementary material
+#	7. Table for threshold on accuracy
+#	8. Figures for supplementary material
 
 #	1. Prerequisites -------------------------------------------------------------
 
@@ -47,6 +48,12 @@ nice <- function(num, digits){
 
 # load ggplot publication themes
 source("R/06_gg_themes.R")
+
+# set figure sizes preferred by JTB (mm)
+onecol     <- 90
+onehalfcol <- 140
+twocol     <- 190
+pageheight <- 240
 
 #	2. Load and prepare model output ---------------------------------------------
 
@@ -153,11 +160,31 @@ write.csv(table_OVL, "output/table_overlap.csv", row.names = FALSE)
   summarize(coverage = mean(included, na.rm = TRUE)) %>% # get averages of coverage
   spread(key = Distribution, value = coverage) )  # spread table to wide format
   
-# export table for bias & precision
+# export table for coverage
 write.csv(table_coverage, "output/table_coverage.csv", row.names = FALSE)
 
 
-#	7. Figures for supplementary material -----------------------------------------
+#	7. Table for threshold on accuracy --------------------------------------------
+# this table is for internal use only: a table of accuracies at ncut == 10 for 
+# recommendations of ncond for a specific target accuracy
+table_thresh <- data %>% 
+  filter(model == distribution,
+         ncuts  == 10) %>%
+  mutate(nvess = ifelse(Type == "Subsamples", nvess/10, nvess)) %>%
+  group_by(Type, Distribution, nvess) %>%
+  summarize(OVL   = mean(OVL, na.rm = TRUE),
+            MSRE  = mean(SRE, na.rm = TRUE),
+            SDSRE =   sd(SRE, na.rm = TRUE))
+
+# export table for accuracy thresholds
+write.csv(table_thresh, "output/accuracy_tresholds.csv", row.names = FALSE)
+
+table_thresh %>% 
+  group_by(Type, Distribution) %>%
+  summarize(thresh = min(nvess[OVL >= 95]))
+
+
+#	8. Figures for supplementary material -----------------------------------------
 # aggregate data for plotting
 plotdat <- data %>%
   filter(!(model %in% c("christman", "cohen"))) %>%      # exclude literature models from
@@ -188,7 +215,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/bias_exh_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+ggsave("figures/bias_exh_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/bias_exh_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # b) bias vs ncuts: subsampling estimator
 plotdat %>% 
@@ -207,7 +235,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/bias_sub_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+ggsave("figures/bias_sub_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/bias_sub_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # c) percent overlap: exhaustive sampling
 plotdat %>% 
@@ -226,7 +255,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/overlap_exh_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+ggsave("figures/overlap_exh_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/overlap_exh_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # d) percent overlap: subsampling estimator
 plotdat %>% 
@@ -245,7 +275,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/overlap_sub_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+ggsave("figures/overlap_sub_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/overlap_sub_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # e) coverage probabilities: exhaustive sampling
 plotdat %>% 
@@ -264,7 +295,8 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/coverage_exh_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+ggsave("figures/coverage_exh_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/coverage_exh_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
 
 # f) coverage probabilities: subsampling estimator
 plotdat %>% 
@@ -283,4 +315,5 @@ plotdat %>%
         axis.title = element_text(vjust = -0.2, size = 11))
 
 # export graphic
-ggsave("figures/coverage_sub_300_dpi.tiff", width = 250, height = 174, units = "mm", dpi = 300)
+ggsave("figures/coverage_sub_300_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 300)
+ggsave("figures/print/coverage_sub_1000_dpi.tiff", width = pageheight, height = twocol, units = "mm", dpi = 1000)
