@@ -138,7 +138,7 @@ data_summarized <- bind_rows(data_dist, data_mod) %>%
    spread(key = Model, value = out)) # spread table to wide format
 
 # export table for bias & precision
-write.csv(table_bias_prec, "output/table_bias_precision.csv", row.names = FALSE)
+write.csv(table_bias_prec, "output/table3_bias_precision.csv", row.names = FALSE)
 
 
 #	5. Table for overall accuracy (percent overlap) -------------------------------
@@ -148,7 +148,7 @@ write.csv(table_bias_prec, "output/table_bias_precision.csv", row.names = FALSE)
    spread(key = Model, value = OVL)) # spread table to wide format
 
 # export table for bias & precision
-write.csv(table_OVL, "output/table_overlap.csv", row.names = FALSE)
+write.csv(table_OVL, "output/table4_overlap.csv", row.names = FALSE)
 
 
 #	6. Table for coverage ----------------------------------------------------------
@@ -161,7 +161,7 @@ write.csv(table_OVL, "output/table_overlap.csv", row.names = FALSE)
   spread(key = Distribution, value = coverage) )  # spread table to wide format
   
 # export table for coverage
-write.csv(table_coverage, "output/table_coverage.csv", row.names = FALSE)
+write.csv(table_coverage, "output/table5_coverage.csv", row.names = FALSE)
 
 
 #	7. Table for threshold on accuracy --------------------------------------------
@@ -177,7 +177,7 @@ table_thresh <- data %>%
             SDSRE =   sd(SRE, na.rm = TRUE))
 
 # export table for accuracy thresholds
-write.csv(table_thresh, "output/accuracy_tresholds.csv", row.names = FALSE)
+write.csv(table_thresh, "output/table_accuracy_tresholds.csv", row.names = FALSE)
 
 table_thresh %>% 
   group_by(Type, Distribution) %>%
