@@ -29,9 +29,9 @@
 # to the distribution name given in brackets above):
 
 # f_dist(_mu)   Probability density of uncut vessel lengths
-# g_dist(_mu)   Size biased probability density of vessel lenghts of the 
+# g_dist(_mu)   Size biased probability density of vessel lengths of the 
 #                    vessels that are situated at the cutting plane
-# h_dist(_mu)   Probability density of the lenghts of the cut-off vessel
+# b_dist(_mu)   Probability density of the lengths of the cut-off vessel
 #                    fragments
 # p_dist(_mu)   Expected proportion of open vessels (infusion profile)
 
@@ -67,7 +67,6 @@ f_gamma_mu <-function(x, shape, mu) dgamma(x, shape = shape, rate = shape / mu)
 f_lnorm    <-function(x, meanlog, sdlog) dlnorm(x, meanlog = meanlog, sdlog = sdlog)
 f_lnorm_mu <-function(x, mu, sdlog) dlnorm(x, meanlog = (log(mu) - sdlog ^ 2 / 2), 
                                            sdlog = sdlog)
-
 
 
 ################################################################################
@@ -108,7 +107,7 @@ g_lnorm_mu <-function(x, mu, sdlog) x / mu *
 
 
 ################################################################################
-########   h(z): Length distribution of cut-off vessel fragments
+########  b(z): Length distribution of cut-off vessel fragments
 ################################################################################
 # Probability density function of the length distributions of the fraction of 
 # each vessel that is injected with silicone.
@@ -122,32 +121,31 @@ g_lnorm_mu <-function(x, mu, sdlog) x / mu *
 # lower.tail = FALSE.
 
 ## Exponential distribution
-h_exp  <-function(z, rate) rate * exp(-rate * z)
-h_exp_mu  <-function(z, mu)  exp(-z / mu) / mu
+b_exp  <-function(z, rate) rate * exp(-rate * z)
+b_exp_mu  <-function(z, mu)  exp(-z / mu) / mu
 
 ## Erlang(2) distribution
-h_erlang2     <-function(z, rate) (rate / 2) * (rate * z + 1) * exp(-rate * z)
-h_erlang2_mu  <-function(z, mu)   (1 / mu) * (2 * z / mu +1) * exp(- z * 2 / mu)
+b_erlang2     <-function(z, rate) (rate / 2) * (rate * z + 1) * exp(-rate * z)
+b_erlang2_mu  <-function(z, mu)   (1 / mu) * (2 * z / mu +1) * exp(- z * 2 / mu)
 
 ## Weibull distribution             
-h_weibull    <-function(z, shape, rate)  (rate / (gamma(1 + 1 / shape))) * 
+b_weibull    <-function(z, shape, rate)  (rate / (gamma(1 + 1 / shape))) * 
   exp(-(rate * z) ^ shape)
-h_weibull_mu <-function(z, shape, mu)  (1 / mu) * 
+b_weibull_mu <-function(z, shape, mu)  (1 / mu) * 
   exp(-(z * gamma(1 + 1 / shape) / mu) ^ shape)      
 
 ## Gamma distribution
-h_gamma <-function(z, shape, rate)  (rate / shape) * 
+b_gamma <-function(z, shape, rate)  (rate / shape) * 
   pgamma(z, shape = shape, rate = rate, lower.tail = FALSE)
-h_gamma_mu <-function(z, shape, mu)  (1 / mu) * 
+b_gamma_mu <-function(z, shape, mu)  (1 / mu) * 
   pgamma(z, shape = shape, rate = shape / mu, lower.tail = FALSE)
 
 ## Lognormal distribution
-h_lnorm <-function(z, meanlog, sdlog) (1 / exp(meanlog + (sdlog ^ 2) / 2)) * 
+b_lnorm <-function(z, meanlog, sdlog) (1 / exp(meanlog + (sdlog ^ 2) / 2)) * 
   plnorm(z, meanlog = meanlog, sdlog = sdlog, lower.tail = FALSE)
-h_lnorm_mu <-function(z, mu, sdlog) (1 / mu) * 
+b_lnorm_mu <-function(z, mu, sdlog) (1 / mu) * 
   plnorm(z, meanlog = (log(mu) - (sdlog ^ 2) / 2), sdlog = sdlog, 
          lower.tail=FALSE)
-
 
 
 ################################################################################
@@ -164,7 +162,7 @@ h_lnorm_mu <-function(z, mu, sdlog) (1 / mu) *
 # The lognormal distribution uses pnorm() with the standard arguments (mean = 0
 # and sd = 1) to obtain the CDF of the standard normal distribution.
 
-## Ezponential distribution
+## Exponential distribution
 p_exp    <- function(z, rate) exp(-rate * z)
 p_exp_mu <- function(z, mu)   exp(-z / mu)
 
@@ -188,7 +186,7 @@ p_gamma_mu <- function(z, shape, mu) {
     (z / mu) * pgamma(shape * z / mu, shape, lower.tail = F)
 }
 
-## Lognormal distribution
+## lognormal distribution
 p_lnorm <- function(z, meanlog, sdlog) {
   pnorm((meanlog + sdlog ^ 2 - log(z)) / (sdlog), 0, 1) - 
     z * pnorm((meanlog - log(z)) / (sdlog), 0, 1) / (exp(meanlog + (sdlog ^ 2) / 2))
