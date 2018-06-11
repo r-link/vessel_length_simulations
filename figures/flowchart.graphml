@@ -15,7 +15,6 @@
   <graph edgedefault="directed" id="G">
     <data key="d0"/>
     <node id="n0" yfiles.foldertype="group">
-      <data key="d5"/>
       <data key="d6">
         <y:TableNode configuration="YED_TABLE_NODE">
           <y:Geometry height="849.0" width="716.4" x="141.10000000000002" y="-39.0"/>
@@ -106,7 +105,6 @@
       </graph>
     </node>
     <node id="n1" yfiles.foldertype="group">
-      <data key="d5"/>
       <data key="d6">
         <y:TableNode configuration="YED_TABLE_NODE">
           <y:Geometry height="113.0" width="260.5" x="372.5" y="38.0"/>
@@ -397,7 +395,7 @@ estimates<y:LabelModel>
           <y:Geometry height="40.0" width="133.0" x="687.5" y="663.25"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="117.82421875" x="7.587890625" y="11.015625">/output/table_*.csv<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="111.82421875" x="10.587890625" y="11.015625">/output/table*.csv<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -413,7 +411,7 @@ estimates<y:LabelModel>
           <y:Geometry height="40.0" width="133.0" x="687.5" y="719.0"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="79.73828125" x="26.630859375" y="11.015625">/figures/*.tiff<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="123.935546875" x="4.5322265625" y="11.015625">/figures/screen/*.tiff<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -424,7 +422,6 @@ estimates<y:LabelModel>
       </data>
     </node>
     <node id="n12" yfiles.foldertype="group">
-      <data key="d5"/>
       <data key="d6">
         <y:TableNode configuration="YED_TABLE_NODE">
           <y:Geometry height="181.0" width="260.5" x="372.5" y="592.75"/>
@@ -469,7 +466,6 @@ estimates<y:LabelModel>
       </data>
       <graph edgedefault="directed" id="n12:">
         <node id="n12::n0">
-          <data key="d5"/>
           <data key="d6">
             <y:GenericNode configuration="com.yworks.flowchart.preparation">
               <y:Geometry height="40.0" width="140.0" x="432.5" y="661.75"/>
@@ -486,7 +482,6 @@ estimates<y:LabelModel>
           </data>
         </node>
         <node id="n12::n1">
-          <data key="d5"/>
           <data key="d6">
             <y:GenericNode configuration="com.yworks.flowchart.preparation">
               <y:Geometry height="40.0" width="140.0" x="432.5" y="719.0"/>
@@ -667,7 +662,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e9" source="n9::n2" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:ArcEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -680,7 +674,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e10" source="n9::n3" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -691,7 +684,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e11" source="n8" target="n12::n0">
-      <data key="d9"/>
       <data key="d10">
         <y:ArcEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -704,7 +696,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e12" source="n8" target="n12::n1">
-      <data key="d9"/>
       <data key="d10">
         <y:ArcEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -717,7 +708,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e13" source="n12::n1" target="n11">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -728,7 +718,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e14" source="n12::n0" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -739,7 +728,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e15" source="n2" target="n5">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -753,7 +741,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e16" source="n2" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="-320.0" ty="-165.25"/>
@@ -764,7 +751,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e17" source="n2" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -778,7 +764,6 @@ estimates<y:LabelModel>
       </data>
     </edge>
     <edge id="e18" source="n0::n0" target="n12::n1">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
