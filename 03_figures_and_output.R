@@ -143,7 +143,7 @@ write.csv(table_bias_prec, "output/table3_bias_precision.csv", row.names = FALSE
 
 #	5. Table for overall accuracy (percent overlap) -------------------------------
 (table_OVL <- data_summarized %>%
-   mutate(OVL = nice(MSRE, 3)) %>%   # format output
+   mutate(OVL = nice(OVL, 3)) %>%   # format output
    select(-MSRE, - SDSRE) %>%        # select relevant columns
    spread(key = Model, value = OVL)) # spread table to wide format
 
