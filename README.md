@@ -1,10 +1,10 @@
-Simulation of vessel length distributions: Supplementary material 3 for Link et al., 2018
+Simulation of vessel length distributions: Code from Link et al., 2018
 ================
 
 Description
 -----------
 
-This repository contains part 3 of the supplementary material of Link et al., 2018, *Maximum likelihood estimation of xylem vessel length distributions*.
+This repository contains the code for the simulations from Link et al., 2018, *Maximum likelihood estimation of xylem vessel length distributions*.
 
 The scripts contained in this repository were used to generate and analyze the Monte Carlo samples of vessel length distributions discussed in said paper, and we refer to the full text for full documentation.
 
@@ -21,7 +21,8 @@ The repository is structured as follows:
           03_figures_and_output.R -- creates the figures and tables for the publication
 /figures  -- figures with model results
 /output   -- model output and tables used in the paper
-/R        -- 01_VL_distributions.r            -- utility functions for vessel length analyses
+/R        -- 01_VL_distributions.R            -- utility functions for vessel length analyses
+                                                 (identical to S3: VLscripts.R, renamed for clarity)
              02_VL_samples.R                  -- functions for the generation of random samples of
                                                  vessel lengths
              03_VL_subsamples.R               -- functions for the generation of subsamples of 
@@ -35,4 +36,6 @@ The repository is structured as follows:
 /settings -- table with the settings defined in "01_sampling_settings.R"      
 ```
 
-The following figure shows a flowchart of the work flow of the project: ![flowchart](figures/flowchart.png)
+The following figure shows a flowchart of the work flow of the project:
+
+![flowchart](figures/flowchart.png)
