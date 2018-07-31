@@ -4,7 +4,7 @@ Simulation of vessel length distributions: Code from Link et al., 2018
 Description
 -----------
 
-This repository contains the code for the simulations from Link et al., 2018, *Maximum likelihood estimation of xylem vessel length distributions*.
+This repository contains the code for the simulations from Link et al., 2018, *Maximum likelihood estimation of xylem vessel length distributions*. Link: https://doi.org/10.1016/j.jtbi.2018.07.036
 
 The scripts contained in this repository were used to generate and analyze the Monte Carlo samples of vessel length distributions discussed in said paper, and we refer to the full text for full documentation.
 
